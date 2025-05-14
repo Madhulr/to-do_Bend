@@ -24,4 +24,13 @@ if not User.objects.filter(username='$DJANGO_SUPERUSER_USERNAME').exists():
 END
 
 # Collect static files
-python manage.py collectstatic --no-input --clear 
+python manage.py collectstatic --no-input --clear
+
+# Create necessary directories
+mkdir -p staticfiles/admin/css
+mkdir -p staticfiles/admin/js
+
+# Copy admin static files if they don't exist
+if [ ! -f "staticfiles/admin/css/login.css" ]; then
+    cp -r venv/lib/python*/site-packages/django/contrib/admin/static/admin/* staticfiles/admin/
+fi 
