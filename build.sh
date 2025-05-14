@@ -6,6 +6,7 @@ set -o errexit
 pip install -r requirements.txt
 
 # Run migrations
+python manage.py makemigrations
 python manage.py migrate
 
 # Create superuser if it doesn't exist
@@ -20,4 +21,4 @@ if not User.objects.filter(username='$DJANGO_SUPERUSER_USERNAME').exists():
 END
 
 # Collect static files
-python manage.py collectstatic --no-input 
+python manage.py collectstatic --no-input --clear 
