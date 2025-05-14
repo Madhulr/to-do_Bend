@@ -5,6 +5,9 @@ set -o errexit
 # Install Python dependencies
 pip install -r requirements.txt
 
+# Create static directory if it doesn't exist
+mkdir -p static
+
 # Run migrations
 python manage.py makemigrations
 python manage.py migrate
