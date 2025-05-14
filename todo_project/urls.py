@@ -20,7 +20,7 @@ from rest_framework import routers
 from todos.views import TodoViewSet, FeedbackViewSet
 
 router = routers.DefaultRouter()
-router.register(r'todos', TodoViewSet)
+router.register(r'todos', TodoViewSet, basename='todo')
 router.register(r'feedback', FeedbackViewSet, basename='feedback')
 
 urlpatterns = [
