@@ -26,6 +26,10 @@ END
 # Collect static files
 python manage.py collectstatic --no-input --clear
 
+# Ensure static files are properly set up
+mkdir -p staticfiles/admin
+python manage.py collectstatic --no-input
+
 # Create necessary directories
 mkdir -p staticfiles/admin/css
 mkdir -p staticfiles/admin/js
