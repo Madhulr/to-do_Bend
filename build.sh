@@ -14,8 +14,23 @@ echo "Database Name: $DATABASE_NAME"
 echo "Database User: $DATABASE_USER"
 echo "Database Host: $DATABASE_HOST"
 
-# Run migrations
-python manage.py makemigrations
+# Force remove any existing migrations
+find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
+find . -path "*/migrations/*.pyc" -delete
+
+# Create fresh migrations
+python manage.py makemigrations auth
+python manage.py makemigrations admin
+python manage.py makemigrations contenttypes
+python manage.py makemigrations sessions
+python manage.py makemigrations todos
+
+# Apply migrations with force
+python manage.py migrate auth --noinput
+python manage.py migrate admin --noinput
+python manage.py migrate contenttypes --noinput
+python manage.py migrate sessions --noinput
+python manage.py migrate todos --noinput
 python manage.py migrate --noinput
 
 # Create superuser if it doesn't exist

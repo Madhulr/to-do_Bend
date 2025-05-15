@@ -88,22 +88,15 @@ WSGI_APPLICATION = 'todo_project.wsgi.application'
 if os.getenv('DATABASE_URL'):
     # Production database settings
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('DATABASE_NAME', 'todo_db'),
-            'USER': os.getenv('DATABASE_USER', 'postgres'),
-            'PASSWORD': os.getenv('DATABASE_PASSWORD', ''),
-            'HOST': os.getenv('DATABASE_HOST', 'localhost'),
-            'PORT': os.getenv('DATABASE_PORT', '5432'),
-            'OPTIONS': {
-                'sslmode': 'require',
-            },
-        }
+        'default': dj_database_url.config(
+            default=os.getenv('DATABASE_URL'),
+            conn_max_age=600,
+            conn_health_checks=True,
+            ssl_require=True
+        )
     }
     print("Using PostgreSQL database configuration")
-    print(f"Database host: {os.getenv('DATABASE_HOST')}")
-    print(f"Database name: {os.getenv('DATABASE_NAME')}")
-    print(f"Database user: {os.getenv('DATABASE_USER')}")
+    print(f"Database URL: {os.getenv('DATABASE_URL')}")
 else:
     # Local development database settings
     DATABASES = {
