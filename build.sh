@@ -10,38 +10,34 @@ mkdir -p static
 
 # Print database configuration for debugging
 echo "Database URL: $DATABASE_URL"
-echo "Database Name: $DATABASE_NAME"
-echo "Database User: $DATABASE_USER"
-echo "Database Host: $DATABASE_HOST"
 
-# Force remove any existing migrations
-find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
-find . -path "*/migrations/*.pyc" -delete
+# Drop and recreate the database
+python manage.py dbshell << END
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO public;
+END
 
 # Create fresh migrations
-python manage.py makemigrations auth
-python manage.py makemigrations admin
-python manage.py makemigrations contenttypes
-python manage.py makemigrations sessions
-python manage.py makemigrations todos
+python manage.py makemigrations
 
-# Apply migrations with force
-python manage.py migrate auth --noinput
-python manage.py migrate admin --noinput
-python manage.py migrate contenttypes --noinput
-python manage.py migrate sessions --noinput
-python manage.py migrate todos --noinput
-python manage.py migrate --noinput
+# Apply migrations
+python manage.py migrate
 
-# Create superuser if it doesn't exist
+# Create superuser
 DJANGO_SUPERUSER_USERNAME=${DJANGO_SUPERUSER_USERNAME:-admin}
 DJANGO_SUPERUSER_EMAIL=${DJANGO_SUPERUSER_EMAIL:-admin@example.com}
 DJANGO_SUPERUSER_PASSWORD=${DJANGO_SUPERUSER_PASSWORD:-admin}
 
+python manage.py createsuperuser --noinput --username $DJANGO_SUPERUSER_USERNAME --email $DJANGO_SUPERUSER_EMAIL
+
+# Set superuser password
 python manage.py shell << END
 from django.contrib.auth.models import User
-if not User.objects.filter(username='$DJANGO_SUPERUSER_USERNAME').exists():
-    User.objects.create_superuser('$DJANGO_SUPERUSER_USERNAME', '$DJANGO_SUPERUSER_EMAIL', '$DJANGO_SUPERUSER_PASSWORD')
+user = User.objects.get(username='$DJANGO_SUPERUSER_USERNAME')
+user.set_password('$DJANGO_SUPERUSER_PASSWORD')
+user.save()
 END
 
 # Collect static files
