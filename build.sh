@@ -9,7 +9,16 @@ pip install -r requirements.txt
 mkdir -p static
 
 # Run migrations
-python manage.py makemigrations
+python manage.py makemigrations auth
+python manage.py makemigrations admin
+python manage.py makemigrations contenttypes
+python manage.py makemigrations sessions
+python manage.py makemigrations todos
+python manage.py migrate auth
+python manage.py migrate admin
+python manage.py migrate contenttypes
+python manage.py migrate sessions
+python manage.py migrate todos
 python manage.py migrate
 
 # Create superuser if it doesn't exist
