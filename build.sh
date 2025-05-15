@@ -8,18 +8,15 @@ pip install -r requirements.txt
 # Create static directory if it doesn't exist
 mkdir -p static
 
+# Print database configuration for debugging
+echo "Database URL: $DATABASE_URL"
+echo "Database Name: $DATABASE_NAME"
+echo "Database User: $DATABASE_USER"
+echo "Database Host: $DATABASE_HOST"
+
 # Run migrations
-python manage.py makemigrations auth
-python manage.py makemigrations admin
-python manage.py makemigrations contenttypes
-python manage.py makemigrations sessions
-python manage.py makemigrations todos
-python manage.py migrate auth
-python manage.py migrate admin
-python manage.py migrate contenttypes
-python manage.py migrate sessions
-python manage.py migrate todos
-python manage.py migrate
+python manage.py makemigrations
+python manage.py migrate --noinput
 
 # Create superuser if it doesn't exist
 DJANGO_SUPERUSER_USERNAME=${DJANGO_SUPERUSER_USERNAME:-admin}

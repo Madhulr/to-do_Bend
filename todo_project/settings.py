@@ -84,6 +84,36 @@ WSGI_APPLICATION = 'todo_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# Database configuration
+if os.getenv('DATABASE_URL'):
+    # Production database settings
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DATABASE_NAME', 'todo_db'),
+            'USER': os.getenv('DATABASE_USER', 'postgres'),
+            'PASSWORD': os.getenv('DATABASE_PASSWORD', ''),
+            'HOST': os.getenv('DATABASE_HOST', 'localhost'),
+            'PORT': os.getenv('DATABASE_PORT', '5432'),
+            'OPTIONS': {
+                'sslmode': 'require',
+            },
+        }
+    }
+    print("Using PostgreSQL database configuration")
+    print(f"Database host: {os.getenv('DATABASE_HOST')}")
+    print(f"Database name: {os.getenv('DATABASE_NAME')}")
+    print(f"Database user: {os.getenv('DATABASE_USER')}")
+else:
+    # Local development database settings
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+    print("Using SQLite database configuration")
+
 # Logging configuration
 LOGGING = {
     'version': 1,
@@ -95,41 +125,21 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': 'INFO',
+        'level': 'DEBUG',  # Changed to DEBUG for more detailed logs
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': 'DEBUG',  # Changed to DEBUG
             'propagate': False,
         },
         'django.db.backends': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'DEBUG',  # Changed to DEBUG
             'propagate': False,
         },
     },
 }
-
-if os.getenv('DATABASE_URL'):
-    # Production database settings
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=os.getenv('DATABASE_URL'),
-            conn_max_age=600,
-            conn_health_checks=True,
-            ssl_require=True  # Add this for Render PostgreSQL
-        )
-    }
-else:
-    # Local development database settings
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
