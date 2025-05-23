@@ -212,14 +212,16 @@ CORS_ALLOW_ALL_ORIGINS = True
 # CORS settings
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "https://to-do-bend.onrender.com",
+    "https://to-do-bend.onrender.com/api/todos",
     "https://to-do-fend.vercel.app",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
 # Add CSRF trusted origins
 CSRF_TRUSTED_ORIGINS = [
-    "https://to-do-bend.onrender.com",
+    "https://to-do-bend.onrender.com/api/todos",
+    "https://to-do-fend.vercel.app",
+    "http://localhost:3000",
 ]
 
 # Default primary key field type
