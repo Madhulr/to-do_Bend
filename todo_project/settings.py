@@ -100,12 +100,16 @@ if os.getenv('DATABASE_URL'):
 else:
     # Local development database settings
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'todo_db_7age',
+        'USER': 'todo_db_7age_user',
+        'PASSWORD': 'YceC5v3VYXmSkfFh7FjyidjUOTjKDFsa',
+        'HOST': 'dpg-d0idtt2dbo4c73akgc80-a.oregon-postgres.render.com',
+        'PORT': '5432',
     }
-    print("Using SQLite database configuration")
+}
+    print("Using postgresql database configuration")
 
 # Logging configuration
 LOGGING = {
