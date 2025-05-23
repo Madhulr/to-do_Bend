@@ -1,13 +1,19 @@
 services:
   - type: web
-    name: https://to-do-bend.onrender.com             # Change this to match your Render service name
+    name: to-do_bend   # This should match the actual name of your web service on Render, not the URL
     env: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
     startCommand: gunicorn config.wsgi:application
     autoDeploy: true
+    preDeployCommand: python manage.py migrate
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: todo_db            # Change this to your Render database name
+          name: todo_db
           property: connectionString
-    preDeployCommand: python manage.py migrate
+
+databases:
+  - name: todo_db
+    plan: free
