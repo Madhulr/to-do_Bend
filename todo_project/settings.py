@@ -14,13 +14,13 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 import dj_database_url
+import logging.config
 
 # Load environment variables
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv('SECRET_KEY') or os.getenv('DJANGO_SECRET_KEY') or 'your-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['*']  # Update this with your Render domain
+ALLOWED_HOSTS = ['*']  # Update this with your Render domain or actual allowed hosts
 
 
 # Application definition
@@ -65,7 +65,7 @@ ROOT_URLCONF = 'todo_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [],  # Add templates dirs here if needed
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -81,12 +81,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'todo_project.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
 # Database configuration
 if os.getenv('DATABASE_URL'):
-    # Production database settings
+    # Production database settings (like Render.com)
     DATABASES = {
         'default': dj_database_url.config(
             default=os.getenv('DATABASE_URL'),
@@ -95,21 +92,22 @@ if os.getenv('DATABASE_URL'):
             ssl_require=False
         )
     }
-    print("Using PostgreSQL database configuration")
+    print("Using PostgreSQL database configuration from DATABASE_URL")
     print(f"Database URL: {os.getenv('DATABASE_URL')}")
 else:
     # Local development database settings
     DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'todo_db_7age',
-        'USER': 'todo_db_7age_user',
-        'PASSWORD': 'YceC5v3VYXmSkfFh7FjyidjUOTjKDFsa',
-        'HOST': 'dpg-d0idtt2dbo4c73akgc80-a.oregon-postgres.render.com',
-        'PORT': '5432',
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'todo_db_7age',
+            'USER': 'todo_db_7age_user',
+            'PASSWORD': 'YceC5v3VYXmSkfFh7FjyidjUOTjKDFsa',
+            'HOST': 'dpg-d0idtt2dbo4c73akgc80-a.oregon-postgres.render.com',
+            'PORT': '5432',
+        }
     }
-}
-    print("Using postgresql database configuration")
+    print("Using local PostgreSQL database configuration")
+
 
 # Logging configuration
 LOGGING = {
@@ -122,44 +120,38 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': 'DEBUG',  # Changed to DEBUG for more detailed logs
+        'level': 'DEBUG',  # Changed to DEBUG for detailed logs
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'DEBUG',  # Changed to DEBUG
+            'level': 'DEBUG',
             'propagate': False,
         },
         'django.db.backends': {
             'handlers': ['console'],
-            'level': 'DEBUG',  # Changed to DEBUG
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'todos': {  # Custom app logging
+            'handlers': ['console'],
+            'level': 'DEBUG',
             'propagate': False,
         },
     },
 }
 
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
+# Password validation
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -172,30 +164,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
-# Use WhiteNoise for static files
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
-
-# WhiteNoise configuration
+# WhiteNoise configuration for serving static files efficiently
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 WHITENOISE_USE_FINDERS = True
 WHITENOISE_MANIFEST_STRICT = False
 WHITENOISE_ALLOW_ALL_ORIGINS = True
 
-# Security settings - only enable in production
+
+# Security settings - enable only in production
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
@@ -206,10 +184,9 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-    
-CORS_ALLOW_ALL_ORIGINS = True
 
 # CORS settings
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "https://to-do-bend.onrender.com",
@@ -217,14 +194,12 @@ CORS_ALLOWED_ORIGINS = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 
-# Add CSRF trusted origins
+# Add CSRF trusted origins for production
 CSRF_TRUSTED_ORIGINS = [
     "https://to-do-bend.onrender.com",
 ]
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # REST Framework settings
