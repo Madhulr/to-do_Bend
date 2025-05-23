@@ -206,11 +206,14 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
+    
+CORS_ALLOW_ALL_ORIGINS = True
 
 # CORS settings
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "https://to-do-bend.onrender.com",
+    "https://to-do-fend.vercel.app",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
